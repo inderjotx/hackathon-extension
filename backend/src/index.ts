@@ -1,7 +1,20 @@
 import { Hono } from 'hono'
 import { generateQuestions } from './ai-core'
+import { cors } from 'hono/cors'
+
 const app = new Hono()
 
+
+app.use(
+  cors({
+    origin: '*',
+    allowHeaders: ['*'],
+    allowMethods: ['POST', 'GET', 'OPTIONS'],
+    exposeHeaders: ['*'],
+    maxAge: 600,
+    credentials: true,
+  })
+)
 
 const welcomeStrings = [
   'Hello Hono!',
