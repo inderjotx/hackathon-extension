@@ -1,0 +1,10 @@
+{
+    "manifest_version": 3,
+    "name": "Study Buddy",
+    "version": "1.0.0",
+    "description": "A Chrome extension help you to study better by create MCQ and Subjective Questions using AI based on content of the website",
+    "action": {
+        "default_popup": "index.html"
+    },
+    "permissions": []
+}
