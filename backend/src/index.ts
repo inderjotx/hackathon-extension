@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { generateQuestions } from './ai-core'
+import { generateQuestions } from './ai-core.js'
 import { cors } from 'hono/cors'
 
 const app = new Hono()
