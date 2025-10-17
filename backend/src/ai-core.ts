@@ -1,4 +1,4 @@
-import { generateObject } from 'ai';
+import { generateObject, streamObject } from 'ai';
 import { z } from 'zod';
 import dotenv from 'dotenv';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
@@ -38,6 +38,32 @@ export async function generateQuestions(pageContent: string) {
     });
 
     return object;
+}
+
+
+
+export async function generateQuestionsStream(pageContent: string) {
+
+    const { partialObjectStream } = await streamObject({
+        model: google('gemini-2.5-flash'),
+        schema: z.object({
+            mcqQuestions: z.array(z.object({
+                question: z.string(),
+                options: z.array(z.string()),
+                correctOption: z.number(),
+                explanation: z.string(),
+            })),
+            // subjectiveQuestions: z.array(z.object({
+            //     question: z.string(),
+            // })),
+        }),
+        system: getSystemPrompt(NUMBER_OF_MCQ_QUESTIONS, pageContent, Difficulty.EASY),
+        prompt: 'Generate questions based on the page content.',
+    });
+
+
+    return partialObjectStream;
+
 }
 
 

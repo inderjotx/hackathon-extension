@@ -1,6 +1,8 @@
 import { Hono } from 'hono'
-import { generateQuestions } from './ai-core.js'
+import { generateQuestions, generateQuestionsStream } from './ai-core.js'
+import { timeout } from 'hono/timeout'
 import { cors } from 'hono/cors'
+import { stream } from 'hono/streaming'
 
 const app = new Hono()
 
@@ -15,6 +17,9 @@ app.use(
     credentials: true,
   })
 )
+
+// 30 seconds
+app.use(timeout(30_000))
 
 const welcomeStrings = [
   'Hello Hono!',
@@ -32,4 +37,25 @@ app.post('/generate-questions', async (c) => {
   return c.json({ mcqQuestions: result.mcqQuestions })
 })
 
-export default app
+app.post('/generate-questions-stream', async (c) => {
+  const data = await c.req.json() as { pageContent: string }
+  return stream(c, async (stream) => {
+
+    stream.onAbort(() => {
+      console.log('Aborted!')
+    })
+
+    const partialObjectStream = await generateQuestionsStream(data.pageContent)
+    for await (const partialObject of partialObjectStream) {
+      await stream.write(JSON.stringify(partialObject))
+    }
+  })
+
+})
+
+
+export default {
+  port: 3000,
+  fetch: app.fetch,
+  idleTimeout: 60,
+}
