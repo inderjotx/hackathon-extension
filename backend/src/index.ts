@@ -39,6 +39,10 @@ app.post('/generate-questions', async (c) => {
 
 app.post('/generate-questions-stream', async (c) => {
   const data = await c.req.json() as { pageContent: string }
+
+  // Emit NDJSON so the client can progressively parse each completed item
+
+  c.header('Content-Type', 'application/x-ndjson')
   return stream(c, async (stream) => {
 
     stream.onAbort(() => {
@@ -46,8 +50,29 @@ app.post('/generate-questions-stream', async (c) => {
     })
 
     const partialObjectStream = await generateQuestionsStream(data.pageContent)
+
+    let sentCount = 0
     for await (const partialObject of partialObjectStream) {
-      await stream.write(JSON.stringify(partialObject))
+      // When the schema is an array, the partial object will grow over time.
+      // We only emit newly completed items as individual NDJSON lines.
+      if (Array.isArray(partialObject)) {
+        while (sentCount < partialObject.length) {
+          const item = partialObject[sentCount]
+          if (
+            item &&
+            typeof item.question === 'string' &&
+            Array.isArray(item.options) &&
+            typeof item.correctOption === 'number' &&
+            typeof item.explanation === 'string'
+          ) {
+            await stream.write(JSON.stringify(item) + '\n')
+            sentCount++
+          } else {
+            break
+          }
+        }
+      } else {
+      }
     }
   })
 
