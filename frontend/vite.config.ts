@@ -6,7 +6,7 @@ import { crx } from '@crxjs/vite-plugin'
 import manifest from "./manifest.json"
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   plugins: [
     react({
       babel: {
@@ -14,13 +14,12 @@ export default defineConfig({
       },
     }),
     tailwindcss(),
-    crx({
-      manifest: manifest,
-    }),
+    ...(command === 'build' ? [crx({ manifest })] : []),
   ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
-})
+
+}))

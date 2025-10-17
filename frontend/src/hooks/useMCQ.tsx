@@ -1,6 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import dotenv from "dotenv";
-dotenv.config();
 import type { MCQQuestion } from "@/types";
 
 export const useMCQ = (content: string) => {
@@ -8,6 +6,7 @@ export const useMCQ = (content: string) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const apiEndpoint = import.meta.env.VITE_API_ENDPOINT as string | undefined;
 
   const body = useMemo(
     () => JSON.stringify({ pageContent: content }),
@@ -19,6 +18,13 @@ export const useMCQ = (content: string) => {
       setData(undefined);
       setIsLoading(false);
       setError(null);
+      return;
+    }
+
+    if (!apiEndpoint) {
+      setData(undefined);
+      setIsLoading(false);
+      setError(new Error("API endpoint not configured (VITE_API_ENDPOINT)"));
       return;
     }
 
@@ -34,18 +40,15 @@ export const useMCQ = (content: string) => {
 
     async function run() {
       try {
-        const res = await fetch(
-          `${process.env.API_ENDPOINT}/generate-questions-stream`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/x-ndjson",
-            },
-            body,
-            signal: controller.signal,
-          }
-        );
+        const res = await fetch(`${apiEndpoint}/generate-questions-stream`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/x-ndjson",
+          },
+          body,
+          signal: controller.signal,
+        });
 
         if (!res.ok) {
           throw new Error(`Request failed: ${res.status}`);
@@ -114,7 +117,7 @@ export const useMCQ = (content: string) => {
       isActive = false;
       controller.abort();
     };
-  }, [body, content]);
+  }, [apiEndpoint, body, content]);
 
   return { data, isLoading, error } as const;
 };
