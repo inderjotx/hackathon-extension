@@ -21,7 +21,6 @@ function App() {
         correctAnswer: question.correctOption,
       }))
     );
-    clearAnswers();
   }, [isLoading, setTotalQuestions, clearAnswers]);
 
   if (error) return <div>Error: {error.message}</div>;

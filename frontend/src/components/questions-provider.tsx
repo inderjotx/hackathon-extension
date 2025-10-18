@@ -11,17 +11,21 @@ interface Answer {
 }
 
 const QuestionsContext = createContext<{
+  isChecked: boolean;
   totalQuestions: Question[];
   answers: Answer[];
   setTotalQuestions: (totalQuestions: Question[]) => void;
   answerQuestion: (questionIndex: number, answer: number) => void;
   clearAnswers: () => void;
+  checkAnswers: () => void;
 }>({
   totalQuestions: [],
   answers: [],
+  isChecked: false,
   setTotalQuestions: () => {},
   answerQuestion: () => {},
   clearAnswers: () => {},
+  checkAnswers: () => {},
 });
 
 export const QuestionProvider = ({
@@ -30,6 +34,7 @@ export const QuestionProvider = ({
   children: React.ReactNode;
 }) => {
   const [totalQuestions, setTotalQuestions] = useState<Question[]>([]);
+  const [isChecked, setIsChecked] = useState(false);
   const [answers, setAnswers] = useState<
     { questionIndex: number; answer: number }[]
   >([]);
@@ -53,6 +58,8 @@ export const QuestionProvider = ({
         setTotalQuestions,
         answerQuestion,
         clearAnswers,
+        checkAnswers: () => setIsChecked(true),
+        isChecked,
       }}
     >
       {children}
