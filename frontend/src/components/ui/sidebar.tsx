@@ -264,7 +264,7 @@ function SidebarTrigger({
         data-sidebar="trigger"
         data-slot="sidebar-trigger"
         size={"icon"}
-        className="cursor-pointer fixed  top-4 right-[260px] border rounded-full group"
+        className="cursor-pointer fixed  top-4 right-[260px] border rounded-full group hover:scale-105"
         onClick={(event) => {
           onClick?.(event);
           toggleSidebar();
@@ -279,7 +279,7 @@ function SidebarTrigger({
       <Button
         data-sidebar="trigger"
         data-slot="sidebar-trigger"
-        className="cursor-pointer fixed bottom-4 right-4"
+        className="cursor-pointer fixed bottom-4 right-4 font-cartograph"
         onClick={(event) => {
           onClick?.(event);
           toggleSidebar();

@@ -1,3 +1,4 @@
+import { useQuestions } from "./questions-provider";
 import {
   Sidebar,
   SidebarContent,
@@ -9,7 +10,12 @@ import App from "@/App.tsx";
 export function AppSidebar() {
   return (
     <Sidebar side="right" variant="floating">
-      <SidebarHeader />
+      <SidebarHeader>
+        <h1 className="text-2xl font-bold font-cartograph">
+          Quiz <span className="text-indigo-700">*</span>{" "}
+        </h1>
+        <ProgressBar />
+      </SidebarHeader>
       <SidebarContent>
         <App />
       </SidebarContent>
@@ -17,3 +23,29 @@ export function AppSidebar() {
     </Sidebar>
   );
 }
+
+const getProgressWidth = (questionAnswered: number, totalQuestions: number) => {
+  let width = (questionAnswered / totalQuestions) * 100;
+  if (totalQuestions === 0) {
+    width = 0;
+  }
+  if (questionAnswered == 0) {
+    width = 0;
+  }
+  return width;
+};
+
+export const ProgressBar = () => {
+  const { totalQuestions, answers } = useQuestions();
+  const questionAnswered = answers.length;
+  const width = getProgressWidth(questionAnswered, totalQuestions.length);
+
+  return (
+    <div
+      className="progress-bar h-1 bg-gradient-to-r from-pink-500 to-indigo-700 rounded-sm"
+      style={{
+        width: width + "%",
+      }}
+    ></div>
+  );
+};
