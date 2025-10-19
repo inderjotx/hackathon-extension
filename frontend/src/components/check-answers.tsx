@@ -37,7 +37,7 @@ export const CheckAnswers = () => {
   return (
     <div className="fixed top-4  right-[calc(var(--sidebar-width)+3rem)] font-cartograph">
       <Button
-        className="bg-transparent border cursor-pointer text-foreground hover:bg-transparent relative overflow-hidden"
+        className="bg-transparent border cursor-pointer text-foreground hover:bg-transparent relative overflow-hidden z-[1000]"
         disabled={!allQuestionsAttempted || isChecked}
         onClick={handleCheckAnswers}
       >

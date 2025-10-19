@@ -6,7 +6,7 @@ import { QuestionProvider } from "@/components/questions-provider";
 
 export function MCQWrapper() {
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={false}>
       <QuestionProvider>
         <AppSidebar />
         <main>

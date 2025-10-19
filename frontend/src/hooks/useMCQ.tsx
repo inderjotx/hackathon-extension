@@ -46,6 +46,7 @@ export const useMCQ = (content: string) => {
             "Content-Type": "application/json",
             Accept: "application/x-ndjson",
           },
+          credentials: "include",
           body,
           signal: controller.signal,
         });

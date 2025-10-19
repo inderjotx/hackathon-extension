@@ -1,9 +1,11 @@
 import { Hono } from 'hono'
-import { Difficulty, generateQuestions, generateQuestionsStream } from './ai-core.js'
+import { Difficulty, generateQuestionsStream } from './ai-core.js'
 import { timeout } from 'hono/timeout'
 import { cors } from 'hono/cors'
 import { stream } from 'hono/streaming'
 import { auth } from './lib/auth.js'
+import { mongoDb } from './lib/db.js'
+import { ObjectId } from 'mongodb'
 
 const app = new Hono<{
   Variables: {
@@ -42,8 +44,6 @@ app.use('*', cors({
 
 
 
-// Per-route CORS no longer needed since global CORS above handles credentials and allowed origins
-
 app.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw));
 
 app.get('/', (c) => {
@@ -51,24 +51,36 @@ app.get('/', (c) => {
 })
 
 
-app.post('/generate-questions', async (c) => {
-  const data = await c.req.json() as { pageContent: string, numberOfQuestions: number, difficulty: Difficulty }
-  const result = await generateQuestions(data?.pageContent ?? '', data?.numberOfQuestions ?? 10, data?.difficulty ?? Difficulty.EASY)
-  return c.json({ mcqQuestions: result.mcqQuestions })
-})
-
+let generateCount = 0
 app.post('/generate-questions-stream', async (c) => {
+
+  const user = c.get('user') as typeof auth.$Infer.Session.user
+  if (!user || !user.id) {
+    return c.json({ error: 'Unauthorized' }, 401)
+  }
+
   const data = await c.req.json() as { pageContent: string }
 
+  const userCollection = mongoDb.collection('users')
+  const userData = await userCollection.findOne({ _id: new ObjectId(user.id) })
+  if (!userData) {
+    return c.json({ error: 'User not found' }, 404)
+  }
+
+  const numberOfQuestions = userData.numberOfQuestions
+  const difficulty = userData.difficulty
 
   c.header('Content-Type', 'application/x-ndjson')
+
+  generateCount++
+  console.log('generateCount', generateCount)
   return stream(c, async (stream) => {
 
     stream.onAbort(() => {
       console.log('Aborted!')
     })
 
-    const partialObjectStream = await generateQuestionsStream(data.pageContent)
+    const partialObjectStream = await generateQuestionsStream(data.pageContent, numberOfQuestions, difficulty)
 
     let sentCount = 0
     for await (const partialObject of partialObjectStream) {
@@ -98,8 +110,23 @@ app.post('/generate-questions-stream', async (c) => {
 })
 
 
+app.post('/update-configuration', async (c) => {
+  const user = c.get('user') as typeof auth.$Infer.Session.user
+  if (!user || !user.id) {
+    return c.json({ error: 'Unauthorized' }, 401)
+  }
+
+  const { numberOfQuestions, difficulty } = await c.req.json() as { numberOfQuestions: number, difficulty: Difficulty }
+  const userCollection = mongoDb.collection('users')
+  await userCollection.updateOne({ _id: new ObjectId(user.id) }, { $set: { numberOfQuestions, difficulty } })
+
+  return c.json({ success: true, user })
+})
+
+
 export default {
   port: 3000,
   fetch: app.fetch,
   idleTimeout: 60,
 }
+

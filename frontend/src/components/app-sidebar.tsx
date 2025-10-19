@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuestions } from "./questions-provider";
 import {
   Sidebar,
@@ -6,8 +7,11 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar";
 import { MCQGenerator } from "./MCQGenerator";
+import { Button } from "./ui/button";
 
 export function AppSidebar() {
+  const [generateQuestions, setGenerateQuestions] = useState(false);
+
   return (
     <Sidebar side="right" variant="floating">
       <SidebarHeader>
@@ -17,12 +21,26 @@ export function AppSidebar() {
         <ProgressBar />
       </SidebarHeader>
       <SidebarContent>
-        <MCQGenerator />
+        {generateQuestions ? (
+          <MCQGenerator />
+        ) : (
+          <GenerateQuestionsButton onClick={() => setGenerateQuestions(true)} />
+        )}
       </SidebarContent>
       <SidebarFooter />
     </Sidebar>
   );
 }
+
+const GenerateQuestionsButton = ({ onClick }: { onClick: () => void }) => {
+  return (
+    <div className="p-4 h-full flex items-center justify-center">
+      <Button onClick={onClick} className="w-full">
+        Generate Questions
+      </Button>
+    </div>
+  );
+};
 
 const getProgressWidth = (questionAnswered: number, totalQuestions: number) => {
   let width = (questionAnswered / totalQuestions) * 100;

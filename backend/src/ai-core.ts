@@ -18,31 +18,12 @@ const google = createGoogleGenerativeAI({
 });
 
 
-export async function generateQuestions(pageContent: string, numberOfQuestions: number, difficulty: Difficulty) {
+
+
+
+export async function generateQuestionsStream(pageContent: string, numberOfQuestions: number, difficulty: Difficulty) {
 
     let numberOfMCQQuestions = Math.min(numberOfQuestions, NUMBER_OF_MCQ_QUESTIONS);
-
-
-    const { object } = await generateObject({
-        model: google('gemini-2.5-flash'),
-        schema: z.object({
-            mcqQuestions: z.array(z.object({
-                question: z.string(),
-                options: z.array(z.string()),
-                correctOption: z.number(),
-                explanation: z.string(),
-            })),
-        }),
-        system: getSystemPrompt(numberOfMCQQuestions, pageContent, difficulty),
-        prompt: `Generate ${numberOfMCQQuestions} of ${difficulty.toUpperCase()} difficulty MCQ questions based on the provided content.`,
-    });
-
-    return object;
-}
-
-
-
-export async function generateQuestionsStream(pageContent: string) {
 
     const { partialObjectStream } = await streamObject({
         model: google('gemini-2.5-flash'),
@@ -52,7 +33,7 @@ export async function generateQuestionsStream(pageContent: string) {
             correctOption: z.number(),
             explanation: z.string(),
         })),
-        system: getSystemPrompt(NUMBER_OF_MCQ_QUESTIONS, pageContent, Difficulty.EASY),
+        system: getSystemPrompt(numberOfMCQQuestions, pageContent, difficulty),
         prompt: 'Generate MCQs based on the page content.',
     });
 
