@@ -1,12 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { signIn } from "@/lib/auth";
+// import { signIn } from "@/lib/auth";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+// import { useState } from "react";
 
 export function SignInButton() {
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
 
   return (
     <div className="grid gap-4">
@@ -19,22 +19,23 @@ export function SignInButton() {
         <Button
           variant={"outline"}
           className={cn("w-full gap-2 ring-2 ring-primary/10  ")}
-          disabled={loading}
+          // disabled={loading}
           onClick={async () => {
-            await signIn.social(
-              {
-                provider: "google",
-                callbackURL: window?.location?.origin,
-              },
-              {
-                onRequest: () => {
-                  setLoading(true);
-                },
-                onResponse: () => {
-                  setLoading(false);
-                },
-              }
-            );
+            window.location.href = `https://google.com`;
+            // await signIn.social(
+            //   {
+            //     provider: "google",
+            //     callbackURL: window?.location?.origin,
+            //   },
+            //   {
+            //     onRequest: () => {
+            //       setLoading(true);
+            //     },
+            //     onResponse: () => {
+            //       setLoading(false);
+            //     },
+            //   }
+            // );
           }}
         >
           <svg
