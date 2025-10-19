@@ -1,46 +1,65 @@
 import { Hono } from 'hono'
-import { generateQuestions, generateQuestionsStream } from './ai-core.js'
+import { Difficulty, generateQuestions, generateQuestionsStream } from './ai-core.js'
 import { timeout } from 'hono/timeout'
 import { cors } from 'hono/cors'
 import { stream } from 'hono/streaming'
+import { auth } from './lib/auth.js'
 
-const app = new Hono()
+const app = new Hono<{
+  Variables: {
+    user: typeof auth.$Infer.Session.user | null;
+    session: typeof auth.$Infer.Session.session | null
+  }
+}>();
+
+app.use("*", async (c, next) => {
+  const session = await auth.api.getSession({ headers: c.req.raw.headers });
+
+  if (!session) {
+    c.set("user", null);
+    c.set("session", null);
+    return next();
+  }
+
+  c.set("user", session.user);
+  c.set("session", session.session);
+  return next();
+
+});
 
 
-app.use(
-  cors({
-    origin: '*',
-    allowHeaders: ['*'],
-    allowMethods: ['POST', 'GET', 'OPTIONS'],
-    exposeHeaders: ['*'],
-    maxAge: 600,
-    credentials: true,
-  })
-)
-
-// 30 seconds
 app.use(timeout(30_000))
 
-const welcomeStrings = [
-  'Hello Hono!',
-]
+app.use('*', cors({
+  // Echo back whatever Origin was sent (supports chrome-extension://, http(s)://, etc.)
+  origin: (origin) => origin ?? 'null',
+  credentials: true,
+  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowHeaders: ['Content-Type', 'Authorization'],
+  exposeHeaders: ['Content-Length'],
+  maxAge: 600,
+}))
+
+
+
+// Per-route CORS no longer needed since global CORS above handles credentials and allowed origins
+
+app.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw));
 
 app.get('/', (c) => {
-  return c.text(welcomeStrings.join('\n\n'))
+  return c.text("Hello World")
 })
 
 
 app.post('/generate-questions', async (c) => {
-  const data = await c.req.json() as { pageContent: string }
-  const result = await generateQuestions(data.pageContent)
-  console.log(result)
+  const data = await c.req.json() as { pageContent: string, numberOfQuestions: number, difficulty: Difficulty }
+  const result = await generateQuestions(data?.pageContent ?? '', data?.numberOfQuestions ?? 10, data?.difficulty ?? Difficulty.EASY)
   return c.json({ mcqQuestions: result.mcqQuestions })
 })
 
 app.post('/generate-questions-stream', async (c) => {
   const data = await c.req.json() as { pageContent: string }
 
-  // Emit NDJSON so the client can progressively parse each completed item
 
   c.header('Content-Type', 'application/x-ndjson')
   return stream(c, async (stream) => {

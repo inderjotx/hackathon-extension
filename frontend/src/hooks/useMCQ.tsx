@@ -117,7 +117,7 @@ export const useMCQ = (content: string) => {
       isActive = false;
       controller.abort();
     };
-  }, [apiEndpoint, body, content]);
+  }, [apiEndpoint, body]);
 
   return { data, isLoading, error } as const;
 };

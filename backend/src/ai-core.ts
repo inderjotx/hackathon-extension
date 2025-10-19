@@ -11,14 +11,17 @@ export enum Difficulty {
 
 dotenv.config();
 const NUMBER_OF_MCQ_QUESTIONS = 10;
-const NUMBER_OF_SUBJECTIVE_QUESTIONS = 3;
+// const NUMBER_OF_SUBJECTIVE_QUESTIONS = 3;
 
 const google = createGoogleGenerativeAI({
     apiKey: process.env.GOOGLE_GEMINI_API,
 });
 
 
-export async function generateQuestions(pageContent: string) {
+export async function generateQuestions(pageContent: string, numberOfQuestions: number, difficulty: Difficulty) {
+
+    let numberOfMCQQuestions = Math.min(numberOfQuestions, NUMBER_OF_MCQ_QUESTIONS);
+
 
     const { object } = await generateObject({
         model: google('gemini-2.5-flash'),
@@ -29,12 +32,9 @@ export async function generateQuestions(pageContent: string) {
                 correctOption: z.number(),
                 explanation: z.string(),
             })),
-            // subjectiveQuestions: z.array(z.object({
-            //     question: z.string(),
-            // })),
         }),
-        system: getSystemPrompt(NUMBER_OF_MCQ_QUESTIONS, pageContent, Difficulty.EASY),
-        prompt: 'Generate questions based on the page content.',
+        system: getSystemPrompt(numberOfMCQQuestions, pageContent, difficulty),
+        prompt: `Generate ${numberOfMCQQuestions} of ${difficulty.toUpperCase()} difficulty MCQ questions based on the provided content.`,
     });
 
     return object;

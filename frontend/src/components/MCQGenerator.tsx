@@ -1,13 +1,32 @@
-import "./App.css";
-import { MCQQuestions } from "./components/MCQuestions";
+import { MCQQuestions } from "@/components/MCQuestions";
 import { useEffect } from "react";
-import { MCQSkeleton } from "./components/MCQSkeleton";
-import { useMCQ } from "./hooks/useMCQ";
-import type { MCQQuestion } from "./types";
-import { content } from "./test";
-import { useQuestions } from "./components/questions-provider";
+import { MCQSkeleton } from "@/components/MCQSkeleton";
+import { useMCQ } from "@/hooks/useMCQ";
+import type { MCQQuestion } from "@/types";
+import { useMemo } from "react";
+import { useQuestions } from "@/components/questions-provider";
 
-function App() {
+function extractPageContent() {
+  const title = document.title;
+  const url = window.location.href;
+  const bodyContent =
+    (document.body as HTMLElement).innerText ||
+    (document.body as HTMLElement).textContent ||
+    "";
+
+  return {
+    title,
+    url,
+    content: bodyContent.trim(),
+  };
+}
+
+export function MCQGenerator() {
+  const { content } = useMemo(
+    () => extractPageContent(),
+    [window.location.href]
+  );
+
   const { data, isLoading, error } = useMCQ(content);
   const questions = (data as MCQQuestion[] | undefined) ?? [];
   const hasQuestions = questions.length > 0;
@@ -32,5 +51,3 @@ function App() {
     </div>
   );
 }
-
-export default App;

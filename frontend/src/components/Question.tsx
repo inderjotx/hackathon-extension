@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { CheckIcon, X, XIcon } from "lucide-react";
+import { CheckIcon, XIcon } from "lucide-react";
 import { Checkbox } from "./ui/checkbox";
 import { useState } from "react";
 import type { MCQQuestion } from "@/types";

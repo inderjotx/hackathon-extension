@@ -5,19 +5,19 @@ import {
   SidebarFooter,
   SidebarHeader,
 } from "@/components/ui/sidebar";
-import App from "@/App.tsx";
+import { MCQGenerator } from "./MCQGenerator";
 
 export function AppSidebar() {
   return (
     <Sidebar side="right" variant="floating">
       <SidebarHeader>
-        <h1 className="text-2xl font-bold font-cartograph">
+        <h1 className="text-2xl font-bold font-cartograph text-center">
           Quiz <span className="text-indigo-700">*</span>{" "}
         </h1>
         <ProgressBar />
       </SidebarHeader>
       <SidebarContent>
-        <App />
+        <MCQGenerator />
       </SidebarContent>
       <SidebarFooter />
     </Sidebar>
