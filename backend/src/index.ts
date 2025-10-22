@@ -54,21 +54,21 @@ app.get('/', (c) => {
 let generateCount = 0
 app.post('/generate-questions-stream', async (c) => {
 
-  const user = c.get('user') as typeof auth.$Infer.Session.user
-  if (!user || !user.id) {
-    return c.json({ error: 'Unauthorized' }, 401)
-  }
+  // const user = c.get('user') as typeof auth.$Infer.Session.user
+  // if (!user || !user.id) {
+  //   return c.json({ error: 'Unauthorized' }, 401)
+  // }
 
   const data = await c.req.json() as { pageContent: string }
 
-  const userCollection = mongoDb.collection('users')
-  const userData = await userCollection.findOne({ _id: new ObjectId(user.id) })
-  if (!userData) {
-    return c.json({ error: 'User not found' }, 404)
-  }
+  // const userCollection = mongoDb.collection('users')
+  // const userData = await userCollection.findOne({ _id: new ObjectId(user.id) })
+  // if (!userData) {
+  //   return c.json({ error: 'User not found' }, 404)
+  // }
 
-  const numberOfQuestions = userData.numberOfQuestions
-  const difficulty = userData.difficulty
+  const numberOfQuestions = 10
+  const difficulty = "hard" as Difficulty
 
   c.header('Content-Type', 'application/x-ndjson')
 

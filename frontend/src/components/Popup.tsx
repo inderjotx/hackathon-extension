@@ -10,7 +10,10 @@ const Popup = () => {
   const isLoggedIn = session !== null;
 
   return (
-    <div className="pb-8 p-4 w-[300px]  flex bg-accent items-center justify-center flex-col gap-6 font-wotfard">
+    <div
+      id="study-buddy-mcq-popup"
+      className="pb-8 p-4 w-[300px]  flex bg-accent items-center justify-center flex-col gap-6 font-wotfard"
+    >
       <div className="space-y-2">
         <h1 className="text-3xl font-bold font-cartograph text-center text-primary">
           Quiz *
