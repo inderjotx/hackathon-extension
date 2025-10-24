@@ -50,3 +50,17 @@ export const CheckAnswers = () => {
     </div>
   );
 };
+
+export const ReGenerateQuestions = () => {
+  const { isChecked, resetQuiz } = useQuestions();
+
+  if (!isChecked) return null;
+
+  return (
+    <div className="fixed top-16  right-[calc(var(--sidebar-width)+0.5rem)] font-cartograph">
+      <Button onClick={resetQuiz}>
+        <span>Regenerate</span>
+      </Button>
+    </div>
+  );
+};

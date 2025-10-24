@@ -2,7 +2,7 @@ import { MCQQuestions } from "@/components/MCQuestions";
 import { useEffect } from "react";
 import { MCQSkeleton } from "@/components/MCQSkeleton";
 import { useMCQ } from "@/hooks/useMCQ";
-import type { MCQQuestion } from "@/types";
+import type { MCQQuestion, Difficulty } from "@/types";
 import { useMemo } from "react";
 import { useQuestions } from "@/components/questions-provider";
 
@@ -21,13 +21,25 @@ function extractPageContent() {
   };
 }
 
-export function MCQGenerator() {
+interface MCQGeneratorProps {
+  numberOfQuestions: number;
+  difficulty: Difficulty;
+}
+
+export function MCQGenerator({
+  numberOfQuestions,
+  difficulty,
+}: MCQGeneratorProps) {
   const { content } = useMemo(
     () => extractPageContent(),
     [window.location.href]
   );
 
-  const { data, isLoading, error } = useMCQ(content);
+  const { data, isLoading, error } = useMCQ(
+    content,
+    numberOfQuestions,
+    difficulty
+  );
   const questions = (data as MCQQuestion[] | undefined) ?? [];
   const hasQuestions = questions.length > 0;
   const { setTotalQuestions, clearAnswers } = useQuestions();

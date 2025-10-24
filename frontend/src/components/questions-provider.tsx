@@ -18,6 +18,9 @@ const QuestionsContext = createContext<{
   answerQuestion: (questionIndex: number, answer: number) => void;
   clearAnswers: () => void;
   checkAnswers: () => void;
+  generateQuestions: boolean;
+  setGenerateQuestions: (generateQuestions: boolean) => void;
+  resetQuiz: () => void;
 }>({
   totalQuestions: [],
   answers: [],
@@ -26,6 +29,9 @@ const QuestionsContext = createContext<{
   answerQuestion: () => {},
   clearAnswers: () => {},
   checkAnswers: () => {},
+  generateQuestions: false,
+  setGenerateQuestions: () => {},
+  resetQuiz: () => {},
 });
 
 export const QuestionProvider = ({
@@ -38,6 +44,14 @@ export const QuestionProvider = ({
   const [answers, setAnswers] = useState<
     { questionIndex: number; answer: number }[]
   >([]);
+  const [generateQuestions, setGenerateQuestions] = useState(false);
+
+  const resetQuiz = () => {
+    setTotalQuestions([]);
+    setAnswers([]);
+    setIsChecked(false);
+    setGenerateQuestions(false);
+  };
 
   const answerQuestion = (questionIndex: number, answer: number) => {
     const filteredAnswers = answers.filter(
@@ -54,6 +68,9 @@ export const QuestionProvider = ({
     <QuestionsContext.Provider
       value={{
         totalQuestions,
+        generateQuestions,
+        setGenerateQuestions,
+        resetQuiz,
         answers,
         setTotalQuestions,
         answerQuestion,

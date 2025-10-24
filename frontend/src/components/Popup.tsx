@@ -1,13 +1,13 @@
-import { useSession } from "@/lib/auth";
-import "../index.css";
-import { SignInButton } from "./sign-in-button";
-import { Difficulty } from "../types";
-import { UpdateConfiguration } from "./update-configuration";
-import type { SessionUser } from "../types";
+// import { useSession } from "@/lib/auth";
+// import "../index.css";
+// import { SignInButton } from "./sign-in-button";
+// import { Difficulty } from "../types";
+// import { UpdateConfiguration } from "./update-configuration";
+// import type { SessionUser } from "../types";
 
 const Popup = () => {
-  const { data: session } = useSession() as unknown as SessionUser;
-  const isLoggedIn = session !== null;
+  // const { data: session } = useSession() as unknown as SessionUser;
+  // const isLoggedIn = session !== null;
 
   return (
     <div
@@ -21,7 +21,7 @@ const Popup = () => {
         <p className="text-center">Never forget what you've learned!</p>
       </div>
 
-      <div>
+      {/* <div>
         {isLoggedIn ? (
           <UpdateConfiguration
             initialNumberOfQuestions={session?.user?.numberOfQuestions}
@@ -30,7 +30,7 @@ const Popup = () => {
         ) : (
           <SignInButton />
         )}
-      </div>
+      </div> */}
     </div>
   );
 };

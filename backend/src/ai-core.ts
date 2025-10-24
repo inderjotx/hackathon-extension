@@ -10,7 +10,7 @@ export enum Difficulty {
 }
 
 dotenv.config();
-const NUMBER_OF_MCQ_QUESTIONS = 10;
+const NUMBER_OF_MCQ_QUESTIONS = 20;
 // const NUMBER_OF_SUBJECTIVE_QUESTIONS = 3;
 
 const google = createGoogleGenerativeAI({
@@ -24,6 +24,8 @@ const google = createGoogleGenerativeAI({
 export async function generateQuestionsStream(pageContent: string, numberOfQuestions: number, difficulty: Difficulty) {
 
     let numberOfMCQQuestions = Math.min(numberOfQuestions, NUMBER_OF_MCQ_QUESTIONS);
+    console.log('numberOfQuestions', numberOfQuestions);
+    console.log('difficulty', difficulty);
 
     const { partialObjectStream } = await streamObject({
         model: google('gemini-2.5-flash'),

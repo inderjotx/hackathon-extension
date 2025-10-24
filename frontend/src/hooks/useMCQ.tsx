@@ -1,7 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { MCQQuestion } from "@/types";
+import type { MCQQuestion, Difficulty } from "@/types";
 
-export const useMCQ = (content: string) => {
+export const useMCQ = (
+  content: string,
+  numberOfQuestions: number = 10,
+  difficulty: Difficulty = "hard"
+) => {
   const [data, setData] = useState<MCQQuestion[] | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
@@ -9,8 +13,13 @@ export const useMCQ = (content: string) => {
   const apiEndpoint = import.meta.env.VITE_API_ENDPOINT as string | undefined;
 
   const body = useMemo(
-    () => JSON.stringify({ pageContent: content }),
-    [content]
+    () =>
+      JSON.stringify({
+        pageContent: content,
+        numberOfQuestions,
+        difficulty,
+      }),
+    [content, numberOfQuestions, difficulty]
   );
 
   useEffect(() => {
@@ -118,7 +127,7 @@ export const useMCQ = (content: string) => {
       isActive = false;
       controller.abort();
     };
-  }, [apiEndpoint, body]);
+  }, [apiEndpoint, body, numberOfQuestions, difficulty]);
 
   return { data, isLoading, error } as const;
 };
