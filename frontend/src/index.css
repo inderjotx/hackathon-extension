@@ -49,6 +49,27 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  --animate-drawing :  drawing var(--duration, 1.2s) var(--slide-duration)  ease-out both;
+  --animate-slider-from-right : slider-from-right var(--slide-duration)  linear backwards;
+
+  @keyframes  drawing {
+    from {
+      stroke-dashoffset: var(--stroke-dashoffset-from , 100);
+    }
+    to {
+      stroke-dashoffset: var(--stroke-dashoffset-to , 0);
+    }
+  }
+  
+  
+  @keyframes slider-from-right {
+    from {
+      right : 0;
+    }
+  }
+  
+
 }
 
 :root, :host {
@@ -84,6 +105,9 @@
   --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
   --sidebar-border: oklch(0.92 0.004 286.32);
   --sidebar-ring: oklch(0.705 0.015 286.067);
+  --slide-duration: 200ms;
+  /* waiting for sidebar to open first */
+  --slide-delay : 200ms; 
 }
 
 .dark, :host(.dark) {
@@ -118,6 +142,9 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.552 0.016 285.938);
+
+
+
 }
 
 @layer base {
@@ -168,3 +195,4 @@
   width: 0%;
   transition: width 400ms ease-out;
 }
+
